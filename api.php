@@ -79,3 +79,24 @@ class Api {
     }
   }
 }
+
+// Include the necessary classes
+require_once 'Database.php';
+
+// Create a new instance of the Database class
+$database = new Database();
+
+// Get a connection to the database
+$conn = $database->getConnection();
+
+// Create a new instance of the Api class
+$api = new Api($conn);
+
+// Check if the form is submitted and call the create() method
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['endpoint']) && $_GET['endpoint'] === 'orders') {
+    $api->create();
+} else {
+    $api->read();
+}
+?>
+
