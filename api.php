@@ -1,81 +1,53 @@
 <?php
-class Api {
-  private $conn;
+// Include the Database class
+require_once 'Database.php';
+require_once 'Api.php';
 
-  public function __construct($db) {
-    $this->conn = $db;
-  }
+// Create a new instance of the Database class
+$database = new Database();
 
-  public function read() {
-    $query = "SELECT * FROM ordenes";
-    $stmt = $this->conn->prepare($query);
-    $stmt->execute();
-    
-    $data = array();
-    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
-      array_push($data, $row);
+// Get a connection to the database
+$conn = $database->getConnection();
+
+// Create a new instance of the Api class
+$api = new Api($conn);
+
+// Determine the API endpoint
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    // Handle GET requests
+    if (isset($_GET['endpoint'])) {
+        $endpoint = $_GET['endpoint'];
+
+        if ($endpoint === 'data') {
+            $api->read();
+        }
     }
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Handle POST requests
+    if (isset($_GET['endpoint'])) {
+        $endpoint = $_GET['endpoint'];
 
-    echo json_encode($data);
-  }
-
-  public function create() {
-    $data = json_decode(file_get_contents("php://input"));
-
-    if(!empty($data->cantidad) && !empty($data->client)){
-      $query = "INSERT INTO ordenes SET cantidad=:cantidad, client=:client";
-      $stmt = $this->conn->prepare($query);
-  
-      $stmt->bindParam(":cantidad", $data->cantidad);
-      $stmt->bindParam(":client", $data->client);
-  
-      if($stmt->execute()){
-        echo json_encode(array("message" => "Record was created."));
-      } else {
-        echo json_encode(array("message" => "Unable to create record."));
-      }
-    } else {
-      echo json_encode(array("message" => "Unable to create record. Data is incomplete."));
+        if ($endpoint === 'orders') {
+            $api->create();
+        }
     }
-  }
+} elseif ($_SERVER['REQUEST_METHOD'] === 'PUT') {
+    // Handle PUT requests
+    if (isset($_GET['endpoint'])) {
+        $endpoint = $_GET['endpoint'];
 
-  public function update() {
-    $data = json_decode(file_get_contents("php://input"));
-
-    if(!empty($data->Id) && (!empty($data->cantidad) || !empty($data->client))){
-      $query = "UPDATE ordenes SET cantidad=:cantidad, client=:client WHERE Id=:Id";
-      $stmt = $this->conn->prepare($query);
-  
-      $stmt->bindParam(":Id", $data->Id);
-      $stmt->bindParam(":cantidad", $data->cantidad);
-      $stmt->bindParam(":client", $data->client);
-  
-      if($stmt->execute()){
-        echo json_encode(array("message" => "Record was updated."));
-      } else {
-        echo json_encode(array("message" => "Unable to update record."));
-      }
-    } else {
-      echo json_encode(array("message" => "Unable to update record. Data is incomplete."));
+        if ($endpoint === 'orders') {
+            $api->update();
+        }
     }
-  }
+} elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+    // Handle DELETE requests
+    if (isset($_GET['endpoint'])) {
+        $endpoint = $_GET['endpoint'];
 
-  public function delete() {
-    $data = json_decode(file_get_contents("php://input"));
-
-    if(!empty($data->Id)){
-      $query = "DELETE FROM ordenes WHERE Id=:Id";
-      $stmt = $this->conn->prepare($query);
-  
-      $stmt->bindParam(":Id", $data->Id);
-  
-      if($stmt->execute()){
-        echo json_encode(array("message" => "Record was deleted."));
-      } else {
-        echo json_encode(array("message" => "Unable to delete record."));
-      }
-    } else {
-      echo json_encode(array("message" => "Unable to delete record. Id is missing."));
+        if ($endpoint === 'orders') {
+            $api->delete();
+        }
     }
-  }
 }
+?>
