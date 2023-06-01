@@ -25,8 +25,8 @@
     <h1>Welcome to My Simple HTML Page</h1>
     <p>This is a basic HTML page displayed using PHP.</p>
     <h2>Create New Order</h2>
-    
-    <form class="order-form" action="http://localhost/iot/api.php?endpoint=orders" method="POST">
+
+    <form class="order-form" action="/iot/api.php?endpoint=orders" method="POST">
         <label for="cantidad">Quantity:</label>
         <input type="text" id="cantidad" name="cantidad" required>
 
@@ -37,7 +37,7 @@
     </form>
     <?php
     // Consume the API and display the data
-    $apiUrl = 'http://localhost/iot/api.php?endpoint=data';
+    $apiUrl = '/iot/api.php?endpoint=data';
     $data = json_decode(file_get_contents($apiUrl), true);
 
 
